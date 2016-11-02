@@ -79,7 +79,7 @@ namespace argparsecpp {
         }
         std::cout << std::endl;
     }
-    bool ArgumentParser::parse(int argc, char *argv[]) {
+    bool ArgumentParser::parse_args(int argc, char *argv[]) {
         std::set<std::string> seenOptions;
         for(int i = 1; i < argc; i++) {
             std::string thisArg = argv[i];

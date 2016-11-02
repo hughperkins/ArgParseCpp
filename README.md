@@ -32,7 +32,7 @@ Example usage:
     parser.add_int_argument("--someint", &someint);
     parser.add_float_argument("--somefloat", &somefloat);
 
-    if(!parser.parse(argc, argv)) {
+    if(!parser.parse_args(argc, argv)) {
         return -1;
     }
 

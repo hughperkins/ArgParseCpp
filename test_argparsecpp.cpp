@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     parser.add_string_argument("--somestring", &somestring)->help("this should be a string");
     parser.add_int_argument("--someint", &someint);
     parser.add_float_argument("--somefloat", &somefloat);
-    if(!parser.parse(argc, argv)) {
+    if(!parser.parse_args(argc, argv)) {
         return -1;
     }
     cout << "requiredstring " << requiredstring << endl;

@@ -75,7 +75,7 @@ namespace argparsecpp {
         Option *add_bool_argument(std::string option, bool *var);
         Option *add_float_argument(std::string option, float *var);
         Option *add_string_argument(std::string option, std::string *var);
-        bool parse(int argc, char *argv[]);
+        bool parse_args(int argc, char *argv[]);
         void print_usage();
     };
 }
