@@ -27,44 +27,79 @@ namespace argparsecpp {
 
 OptionBool::OptionBool(bool *target) : target(target) {}
 bool OptionBool::needsValue() { return false; }
-void OptionBool::parse(std::string valueString) {
-    *target = true;
+OptionBool *OptionBool::defaultTrue() {
+    this->_defaultTrue = true;
+    return this;
 }
+void OptionBool::parse(std::string valueString) {
+    *target = !_defaultTrue;
+}
+void OptionBool::applyDefault() {
+    *target = _defaultTrue;
+}
+
 OptionString::OptionString(std::string *target) : target(target) {}
 bool OptionString::needsValue() { return true; }
 void OptionString::parse(std::string valueString) {
     *target = valueString;
 }
+OptionString *OptionString::defaultValue(std::string _default) {
+    this->_default = _default;
+    return this;
+}
+void OptionString::applyDefault() {
+    *target = _default;
+}
+
 OptionFloat::OptionFloat(float *target) : target(target) {}
 bool OptionFloat::needsValue() { return true; }
 void OptionFloat::parse(std::string valueString) {
     *target = atof(valueString.c_str());
 }
+OptionFloat *OptionFloat::defaultValue(float _default) {
+    this->_default = _default;
+    return this;
+}
+void OptionFloat::applyDefault() {
+    *target = _default;
+}
+
 OptionInt::OptionInt(int *target) : target(target) {}
 bool OptionInt::needsValue() { return true; }
 void OptionInt::parse(std::string valueString) {
     *target = atoi(valueString.c_str());
 }
+OptionInt *OptionInt::defaultValue(int _default) {
+    this->_default = _default;
+    return this;
+}
+void OptionInt::applyDefault() {
+    *target = _default;
+}
 
-Option *ArgumentParser::add_int_argument(std::string option, int *var) {
-    std::unique_ptr<Option> option_(new OptionInt(var));
+OptionInt *ArgumentParser::add_int_argument(std::string option, int *var) {
+    std::unique_ptr<OptionInt> option_(new OptionInt(var));
+    OptionInt *res = option_.get();
     options[option] = std::move(option_);
-    return options[option].get();
+    return res;
 }
-Option *ArgumentParser::add_bool_argument(std::string option, bool *var) {
-    std::unique_ptr<Option> option_(new OptionBool(var));
+OptionBool *ArgumentParser::add_bool_argument(std::string option, bool *var) {
+    std::unique_ptr<OptionBool> option_(new OptionBool(var));
+    OptionBool *res = option_.get();
     options[option] = std::move(option_);
-    return options[option].get();
+    return res;
 }
-Option *ArgumentParser::add_float_argument(std::string option, float *var) {
-    std::unique_ptr<Option> option_(new OptionFloat(var));
+OptionFloat *ArgumentParser::add_float_argument(std::string option, float *var) {
+    std::unique_ptr<OptionFloat> option_(new OptionFloat(var));
+    OptionFloat *res = option_.get();
     options[option] = std::move(option_);
-    return options[option].get();
+    return res;
 }
-Option *ArgumentParser::add_string_argument(std::string option, std::string *var) {
-    std::unique_ptr<Option> option_(new OptionString(var));
+OptionString *ArgumentParser::add_string_argument(std::string option, std::string *var) {
+    std::unique_ptr<OptionString> option_(new OptionString(var));
+    OptionString *res = option_.get();
     options[option] = std::move(option_);
-    return options[option].get();
+    return res;
 }
 void ArgumentParser::print_usage() {
     std::cout << std::endl;
@@ -82,6 +117,10 @@ void ArgumentParser::print_usage() {
 }
 bool ArgumentParser::parse_args(int argc, char *argv[]) {
     std::set<std::string> seenOptions;
+    for(auto it=options.begin(); it != options.end(); it++) {
+        Option *option = it->second.get();
+        option->applyDefault();
+    }
     for(int i = 1; i < argc; i++) {
         std::string thisArg = argv[i];
         if(thisArg == "-h" || thisArg == "-?" || thisArg == "--help") {
